@@ -339,9 +339,9 @@ betterof(_,_,Pos1,Val1,Pos1,Val1).         % Otherwise Pos1 better
 ***************************************************************/
 staticval(pos(GridId,_,_),Val,Level):-
 	% begginer level, only count pieces 
-	(Level =:= 1,!,							
-	 pieces_count_evaluation(GridId,Val,_,_)),
-	 write(Val)
+	(Level =:= 1,!,
+	 write("\n Call to fucking staticval \n"),						
+	 pieces_count_evaluation(GridId,Val,_,_))
 	;
 	% intemediate level, count pieces & approximate mobility 
 	(Level =:= 2,!,
@@ -361,6 +361,7 @@ staticval(pos(GridId,_,_),Val,Level):-
    pieces_count_evaluation(+GridId,-Val,+MaxCount,+MinCount) 
    compare amount of pieces each player has on board 		*/
 pieces_count_evaluation(GridId,Val,MaxCount,MinCount):-
+	write("\n Call to fucking pieces_count_evaluation \n"),
 	pieces_count(GridId,MaxCount,0,MinCount,0,1,1),
 	TotalCount is MaxCount + MinCount,
 	Val is (MaxCount - MinCount) / TotalCount.
@@ -440,7 +441,7 @@ get_hash_key(Grid,[Head|Tail],I,J,N):-		% case 2 of internal routine: keep recur
 % main program to initiate entire application: run/0
 run:-
 	print_welcome_message,
-	get_user_name(PlayerName),
+	% get_user_name(PlayerName),
 	print_greeting_message(PlayerName),
 	get_board_dimension(N),
 	get_game_mode(Mode),	
@@ -560,9 +561,16 @@ user_exit(X):-
 /* get_user_input(-InputString) : main input routine                           
    get next line from input stream, return first token, drop rest of the line  */
 get_user_input(InputString):-
+	write('\nCall to get_user_input\n'),
 	get(C),						% get first readable character (ignore blanks etc) 
 	parse_rest_of_line(Rest),   % get rest of line 
-	append([C],Rest,InputCharacterList), 	
+	append([C],Rest,InputCharacterList), 
+	write('\nC'),
+	write(C),
+	write('\nRest'),
+	write(Rest),
+	write('\nInputCharacterList'),
+	write(InputCharacterList),
 	name(InputString,InputCharacterList). 
 	
 % recursive helper parser routine: parse_rest_of_line(-Result) 
@@ -590,6 +598,11 @@ get_user_name(PlayerName):-
 
 /* get_board_dimension(+N) */ 
 get_board_dimension(N):-
+	write('\nCall to get_board_dimension\n'),
+	name(N,[52]), 
+	write('\nDinmension of type 4\n').
+
+	/*write('\nCall to get_board_dimension\n'),
 	nl, write('Let''s set the game''s board dimension - '),nl, 
 	repeat, 
 	write('Please enter an even number greater or equal to four: '),
@@ -598,14 +611,15 @@ get_board_dimension(N):-
 	 ;
 	 (user_exit(N),!, fail)					% user wishes to quit 
 	 ;
-	 print_invalid_input_message(N), fail). % invalid input  
+	 print_invalid_input_message(N), fail). % invalid input */ 
 
 
 /* get_game_level(+L) L = Level of game: 1=begginer,2=intermediate,3=advanced 
    according to level of game, computer will decide how deep to search and 
    which heurstics estimates to do, the higher level, the harder it is to beat the PC */
 get_game_level(L):-
-	nl, write('Okay. Let''s set the game''s level - '),nl,
+	name(L,[49]).
+	/*nl, write('Okay. Let''s set the game''s level - '),nl,
 	repeat, 
 	write('Please enter a number between 1 to 3 as follows: '),nl,
 	write('1 = Beginner'),nl,	
@@ -616,14 +630,15 @@ get_game_level(L):-
 	 ;
 	 (user_exit(L),!, fail)			% user wishes to quit
 	 ;
-	 (print_invalid_input_message(L), fail)). % invalid input  
+	 (print_invalid_input_message(L), fail)). % invalid input  */
 	
 	
 /* get_game_mode(+M) M = mode of game: 1=human starts, 2=PC starts, 3=PC vs PC 
    the player who starts is the Max player, he playes with x's.                
    the second player is the Minimum player, he playes with o's.               */
 get_game_mode(M):-
-	nl, write('Okay. Let''s set the game''s mode - '),nl,
+   	name(M,[51]).
+	/* nl, write('Okay. Let''s set the game''s mode - '),nl,
 	repeat, 
 	write('Please enter a number between 1 to 3 as follows: '),nl,
 	write('1 = Interactive game against me, YOU go first, you play with "x" pieces.'),nl, 
@@ -634,7 +649,7 @@ get_game_mode(M):-
 	 ;
 	 (user_exit(M),!, fail)				% user wishes to quit
 	 ;
-	 (print_invalid_input_message(M), fail)).	% invalid input  
+	 (print_invalid_input_message(M), fail)).	% invalid input  */
 
 
 /* get_coordinate_from_user(+Player, +ValidCoordinates,-Coordinate) 
