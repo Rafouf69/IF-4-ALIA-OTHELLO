@@ -340,7 +340,8 @@ betterof(_,_,Pos1,Val1,Pos1,Val1).         % Otherwise Pos1 better
 staticval(pos(GridId,_,_),Val,Level):-
 	% begginer level, only count pieces 
 	(Level =:= 1,!,							
-	 pieces_count_evaluation(GridId,Val,_,_))
+	 pieces_count_evaluation(GridId,Val,_,_)),
+	 write(Val)
 	;
 	% intemediate level, count pieces & approximate mobility 
 	(Level =:= 2,!,
@@ -354,6 +355,7 @@ staticval(pos(GridId,_,_),Val,Level):-
 	 mobility_evaluation(GridId,MobilityVal),
 	 corners_evaluation(GridId,CornersVal),
 	 Val is (0.25 * CountVal) + (0.35 * MobilityVal) + (0.4 * CornersVal)).
+	
 
 /* Heurstic evaluation function #1
    pieces_count_evaluation(+GridId,-Val,+MaxCount,+MinCount) 
@@ -475,7 +477,7 @@ play_automatic_game(Level,pos(Grid1,Computer1,_)):-
 	nl,write('Computer'),write(Computer1),write(' plays ('),
 	write(I2),write(','),write(J2),write(').'),
 	nl, write('Current game position after placing a piece on this slot -'),
-	print_grid(Grid2),sleep(1.5),
+	print_grid(Grid2),
 	play_automatic_game(Level, pos(Grid2,Computer2,_))	% alternate turn
 	;
 	% incase current player has no legal move, alternate turn 
@@ -509,8 +511,8 @@ play_interactive_game(Mode,Level,pos(GridId,Player1,_)):-
 	 % print updated position and shift controll to next player  
 	 (not(end_of_game(_)),not(user_exited_game),nl,
 	  write('current position after placing a piece on this slot -'),
-	  print_grid(NewId), sleep(1),
-	  ((Mode =:= Player1,!, print_a_compliment,!, sleep(1)) ; (sleep(0.75))),
+	  print_grid(NewId),
+	  ((Mode =:= Player1,!, print_a_compliment,!)),
 	  play_interactive_game(Mode,Level,pos(NewId,Player2,_))))  % continue to next round 
 	;
 	
@@ -678,12 +680,12 @@ print_welcome_message:-
 	
 /* print_greeting_message(+PlayerName) */
 print_greeting_message(PlayerName):-
-	write('Hello '), write(PlayerName), write('!'),nl,sleep(1),
-	write('This application enables a few possible different game settings.'),nl,sleep(1),
-	write('Inorder to gain best game experience, '),nl,sleep(1),
-	write('select your preferences as instructed below.'),nl,sleep(1),
-	write('Please note: If by any stage you wish to quit, just type in ''EXIT'' or ''exit''.'),nl, sleep(1),
-	nl,write('Okay, first things first... '), nl, sleep(1).
+	write('Hello '), write(PlayerName), write('!'),nl,
+	write('This application enables a few possible different game settings.'),nl,
+	write('Inorder to gain best game experience, '),nl,
+	write('select your preferences as instructed below.'),nl,
+	write('Please note: If by any stage you wish to quit, just type in ''EXIT'' or ''exit''.'),nl,
+	nl,write('Okay, first things first... '), nl.
 
 
 /* print_starting_pos */ 
