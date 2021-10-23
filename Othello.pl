@@ -353,7 +353,15 @@ staticval(pos(GridId,_,_),Val,Level):-
   	 pieces_count_evaluation(GridId,CountVal,_,_),
 	 mobility_evaluation(GridId,MobilityVal),
 	 corners_evaluation(GridId,CornersVal),
-	 Val is (0.25 * CountVal) + (0.35 * MobilityVal) + (0.4 * CornersVal)).
+	 Val is (0.25 * CountVal) + (0.35 * MobilityVal) + (0.4 * CornersVal))
+	 ;
+	 (Level =:= 4,!,
+  	 pieces_count_evaluation(GridId,CountVal,_,_),
+	 mobility_evaluation(GridId,MobilityVal),
+	 corners_evaluation(GridId,CornersVal),
+	 x_evaluation(GridId,XVal),
+	 c_evaluation(GridId,CVal),
+	 Val is (0.15 * CountVal) + (0.25 * MobilityVal) + (0.35 * CornersVal) + (0.15 * XVal) + (0.1 * CVal)).
 
 /* Heurstic evaluation function #1
    pieces_count_evaluation(+GridId,-Val,+MaxCount,+MinCount) 
@@ -395,6 +403,48 @@ mobility_evaluation(Grid,Val):-
 	(Delta is MaxCount - MinCount,
 	TotalCount is MaxCount + MinCount,
 	((TotalCount =:= 0,!, Val is 0) ; (Val is Delta / TotalCount)))).
+
+/* testtttttttttttttttttttttttttttttt */
+
+x_evaluation(GridId,Val):-
+	% get X cases values  
+	dimension(N),
+	A1 is N-1,
+	slot(GridId,coordinate(2,2),C1),
+	slot(GridId,coordinate(2,A1),C2),
+	slot(GridId,coordinate(A1,2),C3),
+	slot(GridId,coordinate(A1,A1),C4),
+	% assign each corner a grade 1/4 according to it's value (empty\max\min)
+	((C1 =:= 0,!,C1Val is 0) ; (C1 =:= 1,!,C1Val is -0.25) ; (C1Val is 0.25)),
+	((C2 =:= 0,!,C2Val is 0) ; (C2 =:= 1,!,C2Val is -0.25) ; (C2Val is 0.25)),
+	((C3 =:= 0,!,C3Val is 0) ; (C3 =:= 1,!,C3Val is -0.25) ; (C3Val is 0.25)),
+	((C4 =:= 0,!,C4Val is 0) ; (C4 =:= 1,!,C4Val is -0.25) ; (C4Val is 0.25)),
+	% sum result of all corners 
+	Val is C1Val+C2Val+C3Val+C4Val.	  
+
+c_evaluation(GridId,Val):-
+	% get X cases values  
+	dimension(N),
+	A1 is N-1,
+	slot(GridId,coordinate(1,2),C1),
+	slot(GridId,coordinate(2,1),C2),
+	slot(GridId,coordinate(1,A1),C3),
+	slot(GridId,coordinate(2,N),C4),
+	slot(GridId,coordinate(A1,1),C5),
+	slot(GridId,coordinate(N,2),C6),
+	slot(GridId,coordinate(A1,N),C7),
+	slot(GridId,coordinate(N,A1),C8),
+	% assign each corner a grade 1/4 according to it's value (empty\max\min)
+	((C1 =:= 0,!,C1Val is 0) ; (C1 =:= 1,!,C1Val is -0.125) ; (C1Val is 0.125)),
+	((C2 =:= 0,!,C2Val is 0) ; (C2 =:= 1,!,C2Val is -0.125) ; (C2Val is 0.125)),
+	((C3 =:= 0,!,C3Val is 0) ; (C3 =:= 1,!,C3Val is -0.125) ; (C3Val is 0.125)),
+	((C4 =:= 0,!,C4Val is 0) ; (C4 =:= 1,!,C4Val is -0.125) ; (C4Val is 0.125)),
+	((C5 =:= 0,!,C5Val is 0) ; (C5 =:= 1,!,C5Val is -0.125) ; (C5Val is 0.125)),
+	((C6 =:= 0,!,C6Val is 0) ; (C6 =:= 1,!,C6Val is -0.125) ; (C6Val is 0.125)),
+	((C7 =:= 0,!,C7Val is 0) ; (C7 =:= 1,!,C7Val is -0.125) ; (C7Val is 0.125)),
+	((C8 =:= 0,!,C8Val is 0) ; (C8 =:= 1,!,C8Val is -0.125) ; (C8Val is 0.125)),
+	% sum result of all corners 
+	Val is C1Val+C2Val+C3Val+C4Val+C5Val+C6Val+C7Val+C8Val.	  
 
 /* Heurstic evaluation function #3
    corners_evaluation(+Grid,-Val) 
@@ -544,7 +594,9 @@ get_max_depth(Level,MaxDepth):-
 	;
 	(Level =:= 2,!, MaxDepth = 3)	% intemediate 
 	;
-	(Level =:= 3,!, MaxDepth = 5)).	% advanced 
+	(Level =:= 3,!, MaxDepth = 5)	% advanced 
+	;
+	(Level =:= 4,!, MaxDepth = 5)).	% advanced 
 
 /* user_exit(+X) - check if user requested to quit. if so, turn on appropriate flag */
 user_exit(X):-
@@ -605,12 +657,13 @@ get_board_dimension(N):-
 get_game_level(L):-
 	nl, write('Okay. Let''s set the game''s level - '),nl,
 	repeat, 
-	write('Please enter a number between 1 to 3 as follows: '),nl,
+	write('Please enter a number between 1 to 4 as follows: '),nl,
 	write('1 = Beginner'),nl,	
 	write('2 = Intermediate'),nl,
 	write('3 = Advanced'),nl, 
+	write('4 = Godmod'),nl, 
 	get_user_input(L), 
-	((integer(L), L >= 1,L =< 3,!)	% validate input	
+	((integer(L), L >= 1,L =< 4,!)	% validate input	
 	 ;
 	 (user_exit(L),!, fail)			% user wishes to quit
 	 ;
@@ -638,7 +691,7 @@ get_game_mode(M):-
 /* get_coordinate_from_user(+Player, +ValidCoordinates,-Coordinate) 
    get from user the requested coordinate to place a piece on and validate it */
 get_coordinate_from_user(Player, ValidCoordinates,Coordinate):-
-	nl, write("It's your turn to move."),nl,
+	nl, write("It s your turn to move."),nl,
 	((Player =:= 1,!, write('You need to place an "x" on the board'))
 	;
 	(write('You need to place an "o" on the board'))),nl,
