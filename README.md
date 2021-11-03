@@ -1,3 +1,4 @@
+
 # IF-4-ALIA-OTHELLO
 
 ## Liste des heuristiques possibles
@@ -14,12 +15,12 @@ On Pourra créer une combinaison linéaire de ces facteurs afin d'obtenir une bo
 
 ## Faire fonctionner les tests python
 1. Créer environnement virtuel environnemebt
-    A. '''python3 -m venv /path/to/new/virtual/environment'''
+    `python3 -m venv /path/to/new/virtual/environment`
 2. Activer virtual virtuel environnemebt
-    B. '''source /path/to/new/virtual/environment/bin/activate'''
+   `source /path/to/new/virtual/environment/bin/activate`
 3. Installer dépendance
-   C. '''pip install -r requirements.txt '''
-4.Remplir correctement le fichier parameters.json
-4. Lancer le python
-    A. '''python3 Main_Test.py'''
-5. Les résultats sont afffiché dans un fichier result.json
+   `pip install -r requirements.txt`
+4. Remplir correctement le fichier parameters.json
+5. Lancer le python
+   `python3 Main_Test.py`
+6. Les résultats sont afffiché dans un fichier result.json
