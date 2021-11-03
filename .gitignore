@@ -1,2 +1,5 @@
 venv/
 .idea/
+test.pl
+results.json
+output.txt
