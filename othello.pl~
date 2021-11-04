@@ -496,32 +496,31 @@ run:-
 	get_board_dimension(N),
 	get_game_mode(Mode),
 	get_game_level(Level),
-	get_game_level_2(Level2),
 	initialize_board(N),
 	print_starting_pos,
 
 	% play against computer
 	((Mode =< 2, play_interactive_game(Mode,Level,pos(0,1,_))
 	 ;
-	 % watch automatic game computer vs computer 
-	 Mode =:= 3, play_automatic_game(Level,Level2,pos(0,1,_)))
+	 % watch automatic game computer vs computer
+	 Mode =:= 3, play_automatic_game(Level,pos(0,1,_)))
 	;
 	% user quit game explictly
 	(user_exited_game,!, print_goodbye_message(PlayerName), cleanup)
 	;
 	% game finished normally
 	(end_of_game(FinalGrid),
-	 print_game_results(Mode,FinalGrid,PlayerName)
-	 %print_goodbye_message(PlayerName),
-	 )).	
-				
-	
+	 print_game_results(Mode,FinalGrid,PlayerName),
+	 print_goodbye_message(PlayerName),
+	 cleanup)).
+
+
 /*************************************************************************
 * Automatic game AI vs AI
 * play_automatic_game(+Level, +pos(Grid1,Computer1,_))
 *************************************************************************/%.
-play_automatic_game(Level,Level2,pos(Grid1,Computer1,_)):-
-	% incase current player has a legal move 
+play_automatic_game(Level,pos(Grid1,Computer1,_)):-
+	% incase current player has a legal move
 	get_legal_coordinates(Grid1,Computer1,_),!,
 	get_max_depth(Level,MaxDepth),
 	alphabeta(pos(Grid1,Computer1,_),_,_,Pos2,_,0,MaxDepth,Level), % get best move
@@ -529,15 +528,14 @@ play_automatic_game(Level,Level2,pos(Grid1,Computer1,_)):-
 	nl,write('Computer'),write(Computer1),write(' plays ('),
 	write(I2),write(','),write(J2),write(').'),
 	nl, write('Current game position after placing a piece on this slot -'),
-	print_grid(Grid2),
-	%sleep(1.5),
-	play_automatic_game(Level2,Level, pos(Grid2,Computer2,_))	% alternate turn
+	print_grid(Grid2),sleep(1.5),
+	play_automatic_game(Level, pos(Grid2,Computer2,_))	% alternate turn
 	;
 	% incase current player has no legal move, alternate turn
 	get_other_player(Computer1,Computer2),
 	get_legal_coordinates(Grid1,Computer2,_),!,
 	nl,write('Computer'),write(Computer1),write(' has no legal moves.'),
-	play_automatic_game(Level2,Level, pos(Grid1,Computer2,_))
+	play_automatic_game(Level, pos(Grid1,Computer2,_))
 	;
 	% both player have no legal move - end game
 	assert(end_of_game(Grid1)),!,nl,write('End of Game'), fail.
@@ -564,9 +562,9 @@ play_interactive_game(Mode,Level,pos(GridId,Player1,_)):-
 	 % print updated position and shift controll to next player
 	 (not(end_of_game(_)),not(user_exited_game),nl,
 	  write('current position after placing a piece on this slot -'),
-	  print_grid(NewId),
-	  ((Mode =:= Player1,!, print_a_compliment,!, sleep(0)) ; (sleep(0))),
-	  play_interactive_game(Mode,Level,pos(NewId,Player2,_))))  % continue to next round 
+	  print_grid(NewId), sleep(1),
+	  ((Mode =:= Player1,!, print_a_compliment,!, sleep(1)) ; (sleep(0.75))),
+	  play_interactive_game(Mode,Level,pos(NewId,Player2,_))))  % continue to next round
 	;
 
 	% incase current player is stuck skip him or end game
@@ -595,7 +593,7 @@ get_other_player(Player1,Player2):-
 
 /* get_max_depth(+Level,-MaxDepth) : depth for alphabeta according to game level*/
 get_max_depth(Level,MaxDepth):-
-	((Level =:= 0,!, MaxDepth = 1)    % random player
+	(Level =:= 0,! MaxDepth = 1)    % random player
 	;
         (Level =:= 1,!, MaxDepth = 1)	% beginner
 	;
@@ -617,19 +615,12 @@ user_exit(X):-
 /* get_user_input(-InputString) : main input routine
    get next line from input stream, return first token, drop rest of the line  */
 get_user_input(InputString):-
-	write('\nCall to get_user_input\n'),
-	get(C),						% get first readable character (ignore blanks etc) 
-	parse_rest_of_line(Rest),   % get rest of line 
-	append([C],Rest,InputCharacterList), 
-	write('\nC'),
-	write(C),
-	write('\nRest'),
-	write(Rest),
-	write('\nInputCharacterList'),
-	write(InputCharacterList),
-	name(InputString,InputCharacterList). 
-	
-% recursive helper parser routine: parse_rest_of_line(-Result) 
+	get(C),						% get first readable character (ignore blanks etc)
+	parse_rest_of_line(Rest),   % get rest of line
+	append([C],Rest,InputCharacterList),
+	name(InputString,InputCharacterList).
+
+% recursive helper parser routine: parse_rest_of_line(-Result)
 parse_rest_of_line(Result):-
 	get0(C),
 	% stop if we reached end of line
@@ -649,39 +640,28 @@ drop_rest_of_line:-
 /* get_user_name(-PlayerName) */
 get_user_name(PlayerName):-
 	write('What is your name? '),
-	name(PlayerName,[65,117,116,111,109,97,116,101,95,80,108,97,121,101,114,95,49]).
-	%NO NEED IN TEST MODE
-	/* get_user_input(PlayerName),nl, */
+	get_user_input(PlayerName),nl.
 
 
 /* get_board_dimension(+N) */
 get_board_dimension(N):-
-	nl, write('Let''s set the game''s board dimension - '),nl, 
+	nl, write('Let''s set the game''s board dimension - '),nl,
 	repeat,
-	name(N,[$$$BOARD_DIMENSION$$$]).
-	/* NO NEED IN AUTOMATIC MODE */
-	/*
+	write('Please enter an even number greater or equal to four: '),
 	get_user_input(N),
 	((integer(N),N >= 4,(0 =:= N mod 2),!)	% validate input
 	 ;
 	 (user_exit(N),!, fail)					% user wishes to quit
 	 ;
 	 print_invalid_input_message(N), fail). % invalid input
-	 */
 
-get_game_level_2(L):-
-	nl, write('Okay. Let''s set the game''s level - '),nl,
-	name(L,[$$$LEVEL_MODE_2$$$]).
 
 /* get_game_level(+L) L = Level of game: 1=begginer,2=intermediate,3=advanced
    according to level of game, computer will decide how deep to search and
    which heurstics estimates to do, the higher level, the harder it is to beat the PC */
 get_game_level(L):-
 	nl, write('Okay. Let''s set the game''s level - '),nl,
-	name(L,[$$$LEVEL_MODE$$$]).
-	/* NO NEED IN AUTOMATE */
-	/*
-	repeat, 
+	repeat,
 	write('Please enter a number between 1 to 4 as follows: '),nl,
 	write('0 = Random Player'),nl,
 	write('1 = Beginner'),nl,
@@ -694,17 +674,12 @@ get_game_level(L):-
 	 (user_exit(L),!, fail)			% user wishes to quit
 	 ;
 	 (print_invalid_input_message(L), fail)). % invalid input
-	*/
-	
-	
-/* get_game_mode(+M) M = mode of game: 1=human starts, 2=PC starts, 3=PC vs PC 
-   the player who starts is the Max player, he playes with x's.                
+
+
+/* get_game_mode(+M) M = mode of game: 1=human starts, 2=PC starts, 3=PC vs PC
+   the player who starts is the Max player, he playes with x's.
    the second player is the Minimum player, he playes with o's.               */
 get_game_mode(M):-
-    nl, write('Okay. Let''s set the game''s mode - '),nl,
-	name(M,[51]).
-	/* NO NEED IN AUTOMATE */
-	/*
 	nl, write('Okay. Let''s set the game''s mode - '),nl,
 	repeat,
 	write('Please enter a number between 1 to 3 as follows: '),nl,
@@ -716,8 +691,7 @@ get_game_mode(M):-
 	 ;
 	 (user_exit(M),!, fail)				% user wishes to quit
 	 ;
-	 (print_invalid_input_message(M), fail)).	% invalid input  
-	 */
+	 (print_invalid_input_message(M), fail)).	% invalid input
 
 
 /* get_coordinate_from_user(+Player, +ValidCoordinates,-Coordinate)
@@ -763,12 +737,12 @@ print_welcome_message:-
 
 /* print_greeting_message(+PlayerName) */
 print_greeting_message(PlayerName):-
-	write('Hello '), write(PlayerName), write('!'),nl,
-	write('This application enables a few possible different game settings.'),nl,
-	write('Inorder to gain best game experience, '),nl,
-	write('select your preferences as instructed below.'),nl,
-	write('Please note: If by any stage you wish to quit, just type in ''EXIT'' or ''exit''.'),nl,
-	nl,write('Okay, first things first... '), nl.
+	write('Hello '), write(PlayerName), write('!'),nl,sleep(1),
+	write('This application enables a few possible different game settings.'),nl,sleep(1),
+	write('Inorder to gain best game experience, '),nl,sleep(1),
+	write('select your preferences as instructed below.'),nl,sleep(1),
+	write('Please note: If by any stage you wish to quit, just type in ''EXIT'' or ''exit''.'),nl, sleep(1),
+	nl,write('Okay, first things first... '), nl, sleep(1).
 
 
 /* print_starting_pos */
@@ -849,18 +823,17 @@ print_game_results(Mode,FinalGrid,PlayerName):-
 	Sum is MaxCount + MinCount,
 	nl,nl, write('Total pieces on board: '),write(Sum),
 	nl,write('Total X''s on board: '), write(MaxCount),
-	nl,write('Total O''s on board: '), write(MinCount),
-	
-	% draw 
+	nl,write('Total O''s on board: '), write(MinCount),nl,nl,
+
+	% draw
 	(((MaxCount =:= MinCount),!, write('It''s a Draw! Wow, great game!'),nl)
 	;
-	
-	% computer vs computer 
-	(Mode =:= 3,!,open('output.txt',write,Out),
-    write(Out,MaxCount),
-	write(Out,"-"),
-    write(Out,MinCount),
-    close(Out) )
+
+	% computer vs computer
+	(Mode =:= 3,!,
+	 ((MaxCount > MinCount,!, write('Computer1 won. Wow, great game!'),nl)
+	 ;
+	 (write('Computer2 won. Wow, great game!'),nl)))
 	;
 
 	% human va computer
