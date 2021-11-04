@@ -593,7 +593,7 @@ get_other_player(Player1,Player2):-
 
 /* get_max_depth(+Level,-MaxDepth) : depth for alphabeta according to game level*/
 get_max_depth(Level,MaxDepth):-
-	((Level =:= 0,!, MaxDepth = 1)    % random player
+	(Level =:= 0,! MaxDepth = 1)    % random player
 	;
         (Level =:= 1,!, MaxDepth = 1)	% beginner
 	;
