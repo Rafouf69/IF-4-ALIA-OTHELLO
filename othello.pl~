@@ -406,20 +406,25 @@ stable_count(Id,MaxTotal,MaxTemp,MinTotal,MinTemp,I,J):-
 	(get_next_sequential_index(I,J,NewI,NewJ,N),
 	stable_count(Id,MaxTotal,NewMaxTemp,MinTotal,NewMinTemp,NewI,NewJ))).
 
-%corners are stable
-% pieces at the edge of the grid are stable if all pieces next to them
-% are stable
 is_stable(coordinate(I,J),Id,CurrentVal):-
 	CurrentVal =:= 1,
 	dimension(N),
-	((I =:= 1, J =:= 1);
+	%corners are stable
+	(
+	(I =:= 1, J =:= 1);
 	(I =:= 1, J =:= N);
 	(I =:= N, J =:= 1);
 	(I =:= N, J =:= N);
+	% pieces at the edge of the grid are stable if all pieces next to them are stable
 	(I =:= 1, J > 1, NewJ is J-1,slot(Id,coordinate(I,NewJ),NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal));
 	(I =:= N, J > 1, NewJ is J-1,slot(Id,coordinate(I,NewJ),NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal));
 	(I =:= 1, J < N, NewJ is J+1,slot(Id,coordinate(I,NewJ),NewCurrentVal),is_stable_right(coordinate(I,NewJ),Id,NewCurrentVal));
-	(I =:= N, J < N, NewJ is J+1,slot(Id,coordinate(I,NewJ),NewCurrentVal),is_stable_right(coordinate(I,NewJ),Id,NewCurrentVal))).
+	(I =:= N, J < N, NewJ is J+1,slot(Id,coordinate(I,NewJ),NewCurrentVal),is_stable_right(coordinate(I,NewJ),Id,NewCurrentVal));
+	(I > 1, J =:= 1, NewI is I-1,slot(Id,coordinate(NewI,J),NewCurrentVal),is_stable_up(coordinate(NewI,J),Id,NewCurrentVal));
+	(I > 1, J =:= N, NewI is I-1,slot(Id,coordinate(NewI,J),NewCurrentVal),is_stable_up(coordinate(NewI,J),Id,NewCurrentVal));
+	(I < N, J =:= 1, NewI is I+1,slot(Id,coordinate(NewI,J),NewCurrentVal),is_stable_down(coordinate(NewI,J),Id,NewCurrentVal));
+	(I < N, J =:= N, NewI is I+1,slot(Id,coordinate(NewI,J),NewCurrentVal),is_stable_down(coordinate(NewI,J),Id,NewCurrentVal))
+	).
 
 
 is_stable_left(coordinate(I,J),Id,CurrentVal):-
@@ -429,6 +434,23 @@ is_stable_left(coordinate(I,J),Id,CurrentVal):-
 	(I =:= N, J =:= 1);
 	(I =:= 1, J > 1, NewJ is J-1, slot(Id,corrdinate(I,NewJ,NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal)));
 	(I =:= N, J > 1, NewJ is J-1, slot(Id,corrdinate(I,NewJ,NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal)))).
+
+is_stable_right(coordinate(I,J),Id,CurrentVal):-
+	CurrentVal =:= 1,
+	dimension(N),
+	((I =:= 1, J =:= N);
+	(I =:= N, J =:= N);
+	(I =:= 1, J < N, NewJ is J+1, slot(Id,corrdinate(I,NewJ,NewCurrentVal),is_stable_right(coordinate(I,NewJ),Id,NewCurrentVal)));
+	(I =:= N, J < N, NewJ is J+1, slot(Id,corrdinate(I,NewJ,NewCurrentVal),is_stable_right(coordinate(I,NewJ),Id,NewCurrentVal)))).
+
+is_stable_up(coordinate(I,J),Id,CurrentVal):-
+	CurrentVal =:= 1,
+	dimension(N),
+	((I =:= 1, J =:= N);
+	(I =:= N, J =:= N);
+	(I > 1, J < N, NewI is I-1, slot(Id,corrdinate(NewI,J,NewCurrentVal),is_stable_right(coordinate(NewI,J),Id,NewCurrentVal)));
+	(I > 1, J < N, NewI is I-1, slot(Id,corrdinate(NewI,J,NewCurrentVal),is_stable_right(coordinate(NewI,J),Id,NewCurrentVal)))).
+
 
 /* Heurstic evaluation function #2
    mobility_evaluation(+Grid,-Val)
