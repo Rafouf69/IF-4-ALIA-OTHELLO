@@ -428,7 +428,12 @@ is_stable(coordinate(I,J),Id,CurrentVal):-
 	(I =:= 1, full_row(coordinate(1,1), Id));
 	(I =:= N, full_row(coordinate(N,1), Id));
 	(J =:= 1, full_column(coordinate(1,1), Id));
-	(J =:= N, full_column(coordinate(1,N), Id))
+	(J =:= N, full_column(coordinate(1,N), Id));
+	%if rows/columns are full with own pieces from the edge own + row/column next to them is full --> piece in full  row/column is stable
+	(I > 1, NewI is I-1,own_rows_up(coordinate(NewI,1),Id),full_row(coordinate(I,1),Id));
+	(I < N, NewI is I+1,own_rows_down(coordinate(NewI,1),Id),full_row(coordinate(I,1),Id));
+	(J > 1, NewJ is J-1,own_columns_left(coordinate(1,NewJ),Id),full_column(coordinate(I,1),Id));
+	(J < N, NewJ is J+1,own_columns_right(coordinate(1,NewJ),Id),full_column(coordinate(I,1),Id))
 	).
 
 
@@ -468,6 +473,32 @@ full_row(coordinate(I,J),Id):-
 	dimension(N),
 	slot(Id,coordinate(I,J,CurrentVal),(CurrentVal =:= 1; CurrentVal =:= 2)),
 	(J < N,!,NewJ is J+1,full_row(coordinate(I,NewJ),Id)).
+
+full_column(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal),(CurrentVal =:= 1; CurrentVal =:= 2),
+	(I < N,!,NewI is I+1,full_row(coordinate(NewI,J),Id)).
+
+own_rows_up(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal),
+	CurrentVal =:= 1,
+	(J < N, NewJ is J+1, own_rows_up(I, NewJ);
+	 I > 1, NewI is I-1, own_rows_up(NewI,1)).
+
+own_rows_down(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal),
+	CurrentVal =:= 1,
+	(J < N, NewJ is J+1, own_rows_down(I, NewJ);
+	 I < N, NewI is I+1, own_rows_down(NewI,1)).
+
+own_columns_left(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal),
+	CurrentVal =:= 1,
+	(I < N, NewI is I+1, own_columns_left(NewI, J);
+	 J > 1, NewJ is J-1, own_rows_up(1,NewJ)).
 
 
 /* Heurstic evaluation function #2
