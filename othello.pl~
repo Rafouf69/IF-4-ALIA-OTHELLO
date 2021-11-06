@@ -364,7 +364,8 @@ staticval(pos(GridId,_,_),Val,Level):-
 	 corners_evaluation(GridId,CornersVal),
 	 x_evaluation(GridId,XVal),
 	 c_evaluation(GridId,CVal),
-	 Val is (0.15 * CountVal) + (0.25 * MobilityVal) + (0.35 * CornersVal) + (0.15 * XVal) + (0.1 * CVal)).
+	 stable_count_evaluation(GridId,StableVal,_,_),
+	 Val is (0.05 * CountVal) + (0.25 * MobilityVal) + (0.35 * CornersVal) + (0.15 * XVal) + (0.1 * CVal) + (0.1 * StableVal)).
 
 /* Heurstic evaluation function #1
    pieces_count_evaluation(+GridId,-Val,+MaxCount,+MinCount)
@@ -387,6 +388,47 @@ pieces_count(Id,MaxTotal,MaxTemp,MinTotal,MinTemp,I,J):-
 	;
 	(get_next_sequential_index(I,J,NewI,NewJ,N),
 	pieces_count(Id,MaxTotal,NewMaxTemp,MinTotal,NewMinTemp,NewI,NewJ))).
+
+stable_count_evaluation(GridId,StableVal,MaxCount,MinCount):-
+	stable_count(GridId,MaxCount,0,MinCount,0,1,1),
+	TotalCount is MaxCount + MinCount,
+	StableVal is (MaxCount - MinCount)/TotalCount.
+
+stable_count(Id,MaxTotal,MaxTemp,MinTotal,MinTemp,I,J):-
+	slot(Id,coordinate(I,J),CurrentVal),
+	((CurrentVal =:= 0,!, NewMaxTemp is MaxTemp, NewMinTemp is MinTemp); %coordinate empty
+	(CurrentVal =:= 2,!, NewMinTemp is MinTemp + 1, NewMaxTemp is MaxTemp); %other player owns coordinate
+	((is_stable(coordinate(I,J),Id,CurrentVal),!,(NewMaxTemp is MaxTemp + 1,NewMinTemp is MinTemp)); %piece is stable
+	(NewMaxTemp is MaxTemp, NewMinTemp is MinTemp))), %piece is not stable
+
+	dimension(N),
+	((I=:=N, J=:=N,!,MaxTotal is NewMaxTemp, MinTotal is NewMinTemp);
+	(get_next_sequential_index(I,J,NewI,NewJ,N),
+	stable_count(Id,MaxTotal,NewMaxTemp,MinTotal,NewMinTemp,NewI,NewJ))).
+
+%corners are stable
+% pieces at the edge of the grid are stable if all pieces next to them
+% are stable
+is_stable(coordinate(I,J),Id,CurrentVal):-
+	CurrentVal =:= 1,
+	dimension(N),
+	((I =:= 1, J =:= 1);
+	(I =:= 1, J =:= N);
+	(I =:= N, J =:= 1);
+	(I =:= N, J =:= N);
+	(I =:= 1, J > 1, NewJ is J-1,slot(Id,coordinate(I,NewJ),NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal));
+	(I =:= N, J > 1, NewJ is J-1,slot(Id,coordinate(I,NewJ),NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal));
+	(I =:= 1, J < N, NewJ is J+1,slot(Id,coordinate(I,NewJ),NewCurrentVal),is_stable_right(coordinate(I,NewJ),Id,NewCurrentVal));
+	(I =:= N, J < N, NewJ is J+1,slot(Id,coordinate(I,NewJ),NewCurrentVal),is_stable_right(coordinate(I,NewJ),Id,NewCurrentVal))).
+
+
+is_stable_left(coordinate(I,J),Id,CurrentVal):-
+	CurrentVal =:= 1,
+	dimension(N),
+	((I =:= 1, J =:= 1);
+	(I =:= N, J =:= 1);
+	(I =:= 1, J > 1, NewJ is J-1, slot(Id,corrdinate(I,NewJ,NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal)));
+	(I =:= N, J > 1, NewJ is J-1, slot(Id,corrdinate(I,NewJ,NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal)))).
 
 /* Heurstic evaluation function #2
    mobility_evaluation(+Grid,-Val)
@@ -593,7 +635,7 @@ get_other_player(Player1,Player2):-
 
 /* get_max_depth(+Level,-MaxDepth) : depth for alphabeta according to game level*/
 get_max_depth(Level,MaxDepth):-
-	(Level =:= 0,! MaxDepth = 1)    % random player
+	((Level =:= 0,!, MaxDepth = 1)    % random player
 	;
         (Level =:= 1,!, MaxDepth = 1)	% beginner
 	;
