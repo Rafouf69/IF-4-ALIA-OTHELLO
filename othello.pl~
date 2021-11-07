@@ -550,6 +550,16 @@ full_diagonal_south_east(coordinate(I,J),Id):-
 	slot(Id,coordinate(I,J),CurrentVal), (CurrentVal =:= 1; CurrentVal =:= 2),
 	(I < N, J < N,!,NewI is I+1, NewJ is J+1,full_diagonal_south_east(coordinate(NewI,NewJ),Id)).
 
+full_diagonal_north_east(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal), (CurrentVal =:= 1; CurrentVal =:= 2),
+	(I > 1, J < N,!,NewI is I-1, NewJ is J+1,full_diagonal_north_east(coordinate(NewI,NewJ),Id)).
+
+full_diagonal_south_west(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal), (CurrentVal =:= 1; CurrentVal =:= 2),
+	(I < N, J > 1,!,NewI is I+1, NewJ is J-1,full_diagonal_south_west(coordinate(NewI,NewJ),Id)).
+
 own_rows_up(coordinate(I,J),Id):-
 	dimension(N),
 	slot(Id,coordinate(I,J),CurrentVal),

@@ -11,7 +11,7 @@ mobility_heuristique(Grid, Val):-
 
 	% compare
 	(Delta is MaxCount - MinCount,
-	Val is Delta )).
+	Val is Delta ).
 
 x_evaluation(GridId,Val):-
 	% get X cases values
