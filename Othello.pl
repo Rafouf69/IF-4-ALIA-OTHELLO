@@ -443,23 +443,41 @@ is_stable(coordinate(I,J),Id,CurrentVal):-
 	  (is_stable_left(coordinate(I,J),Id,CurrentVal);is_stable_right(coordinate(I,J),Id,CurrentVal))));
 	((J < N, NewJ is J+1, own_columns_right(coordinate(I,NewJ),Id),slot(Id,coordinate(I,J),CurrentVal),
 	   (is_stable_up(coordinate(I,J),Id,CurrentVal);is_stable_down(coordinate(I,J),Id,CurrentVal))));
-	%if diagonals in one direction are full with own pieces from the corner on + diagonal of own pieces to at least one edge --> piece is stable
+	%(1) if diagonals in one direction are full with own pieces from the corner on + diagonal of own pieces to at least one edge
+	%     --> piece is stable
+	%(2) if diagonals in one direction are full with own pieces from the corner on + diagonal without empty spaces
+	%     --> piece in diagonal without empty spaces is stable
 	((J > 1,!,NewJ is J-1,own_diagonals_south_west(coordinate(I,NewJ),Id),slot(coordinate(I,J),Id,CurrentVal),
-	    (is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal))));
-	((I < N,!,NewI is I+1,own_diagonals_south_west(coordinate(NewI,J),Id),slot(coordinate(I,J),Id,CurrentVal),
-	    (is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal))));
+	    ((is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal));% (1)
+	     (full_diagonal_north_west(coordinate(I,J),Id),full_diagonal_south_east(coordinate(I,J),Id))))); % (2)
+
+	 ((I < N,!,NewI is I+1,own_diagonals_south_west(coordinate(NewI,J),Id),slot(coordinate(I,J),Id,CurrentVal),
+	    ((is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal)); % (1)
+	     (full_diagonal_north_west(coordinate(I,J),Id),full_diagonal_south_east(coordinate(I,J),Id))))); % (2)
+
 	((J > 1,!,NewJ is J-1,own_diagonals_north_east(coordinate(I,NewJ),Id),slot(coordinate(I,J),Id,CurrentVal),
-	    (is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal))));
+	    ((is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal)); % (1)
+	      (full_diagonal_north_west(coordinate(I,J),Id),full_diagonal_south_east(coordinate(I,J),Id))))); % (2)
+
 	((I < N,!,NewI is I+1,own_diagonals_north_east(coordinate(NewI,J),Id),slot(coordinate(I,J),Id,CurrentVal),
-	    (is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal))));
+	    ((is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal)); % (1)
+	      (full_diagonal_north_west(coordinate(I,J),Id),full_diagonal_south_east(coordinate(I,J),Id))))); % (2)
+
 	((J > 1,!,NewJ is J-1,own_diagonals_north_west(coordinate(I,NewJ),Id),slot(coordinate(I,J),Id,CurrentVal),
-	    (is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal))));
+	    ((is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal)); % (1)
+	    (full_diagonal_north_east(coordinate(I,J),Id),full_diagonal_south_west(coordinate(I,J),Id))))); % (2)
+
 	((I > 1,!,NewI is I-1,own_diagonals_north_west(coordinate(NewI,J),Id),slot(coordinate(I,J),Id,CurrentVal),
-	    (is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal))));
+	    ((is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal)); % (1)
+	     (full_diagonal_north_east(coordinate(I,J),Id),full_diagonal_south_west(coordinate(I,J),Id))))); % (2)
+
 	((J < N,!,NewJ is J+1,own_diagonals_south_east(coordinate(I,NewJ),Id),slot(coordinate(I,J),Id,CurrentVal),
-	    (is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal))));
+	    ((is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal)); % (1)
+	     (full_diagonal_north_east(coordinate(I,J),Id),full_diagonal_south_west(coordinate(I,J),Id))))); % (2)
+
 	((I < N,!,NewI is I+1,own_diagonals_south_east(coordinate(NewI,J),Id),slot(coordinate(I,J),Id,CurrentVal),
-	    (is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal))))
+	    ((is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal)); % (1)
+	     (full_diagonal_north_east(coordinate(I,J),Id),full_diagonal_south_west(coordinate(I,J),Id))))) % (2)
 	).
 
 
@@ -522,6 +540,25 @@ full_column(coordinate(I,J),Id):-
 	dimension(N),
 	slot(Id,coordinate(I,J),CurrentVal),(CurrentVal =:= 1; CurrentVal =:= 2),
 	(I < N,!,NewI is I+1,full_column(coordinate(NewI,J),Id)).
+
+full_diagonal_north_west(coordinate(I,J),Id):-
+	slot(Id,coordinate(I,J),CurrentVal), (CurrentVal =:= 1; CurrentVal =:= 2),
+	(I > 1, J > 1,!,NewI is I-1, NewJ is J-1,full_diagonal_north_west(coordinate(NewI,NewJ),Id)).
+
+full_diagonal_south_east(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal), (CurrentVal =:= 1; CurrentVal =:= 2),
+	(I < N, J < N,!,NewI is I+1, NewJ is J+1,full_diagonal_south_east(coordinate(NewI,NewJ),Id)).
+
+full_diagonal_north_east(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal), (CurrentVal =:= 1; CurrentVal =:= 2),
+	(I > 1, J < N,!,NewI is I-1, NewJ is J+1,full_diagonal_north_east(coordinate(NewI,NewJ),Id)).
+
+full_diagonal_south_west(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal), (CurrentVal =:= 1; CurrentVal =:= 2),
+	(I < N, J > 1,!,NewI is I+1, NewJ is J-1,full_diagonal_south_west(coordinate(NewI,NewJ),Id)).
 
 own_rows_up(coordinate(I,J),Id):-
 	dimension(N),
