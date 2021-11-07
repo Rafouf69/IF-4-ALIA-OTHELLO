@@ -391,7 +391,7 @@ pieces_count(Id,MaxTotal,MaxTemp,MinTotal,MinTemp,I,J):-
 
 stable_count_evaluation(GridId,StableVal,MaxCount,MinCount):-
 	stable_count(GridId,MaxCount,0,MinCount,0,1,1),
-	TotalCount is MaxCount + MinCount,
+	TotalCount is MaxCount + MinCount + 1,
 	StableVal is (MaxCount - MinCount)/TotalCount.
 
 stable_count(Id,MaxTotal,MaxTemp,MinTotal,MinTemp,I,J):-
@@ -429,84 +429,166 @@ is_stable(coordinate(I,J),Id,CurrentVal):-
 	(I =:= N, full_row(coordinate(N,1), Id));
 	(J =:= 1, full_column(coordinate(1,1), Id));
 	(J =:= N, full_column(coordinate(1,N), Id));
-	%if rows/columns are full with own pieces from the edge own + row/column next to them is full --> piece in full  row/column is stable
+	%if rows/columns are full with own pieces from the edge on + row/column next to them is full --> piece in full  row/column is stable
 	(I > 1, NewI is I-1,own_rows_up(coordinate(NewI,1),Id),full_row(coordinate(I,1),Id));
 	(I < N, NewI is I+1,own_rows_down(coordinate(NewI,1),Id),full_row(coordinate(I,1),Id));
 	(J > 1, NewJ is J-1,own_columns_left(coordinate(1,NewJ),Id),full_column(coordinate(I,1),Id));
-	(J < N, NewJ is J+1,own_columns_right(coordinate(1,NewJ),Id),full_column(coordinate(I,1),Id))
+	(J < N, NewJ is J+1,own_columns_right(coordinate(1,NewJ),Id),full_column(coordinate(I,1),Id));
+	% if rows/columns are full with own pieces from the edge on + row/colum is to at least one edge full with own pieces --> piece is stable
+	((I > 1, NewI is I-1, own_rows_up(coordinate(NewI,1),Id),slot(Id,coordinate(I,J),CurrentVal),
+	  (is_stable_left(coordinate(I,J),Id,CurrentVal);is_stable_right(coordinate(I,J),Id,CurrentVal))));
+	((I < N, NewI is I+1, own_rows_down(coordinate(NewI,J),Id),slot(Id,coordinate(I,J),CurrentVal),
+	  (is_stable_left(coordinate(I,J),Id,CurrentVal);is_stable_right(coordinate(I,J),Id,CurrentVal))));
+	((J > 1, NewJ is J-1, own_columns_left(coordinate(I,NewJ),Id),slot(Id,coordinate(I,J),CurrentVal),
+	  (is_stable_left(coordinate(I,J),Id,CurrentVal);is_stable_right(coordinate(I,J),Id,CurrentVal))));
+	((J < N, NewJ is J+1, own_columns_right(coordinate(I,NewJ),Id),slot(Id,coordinate(I,J),CurrentVal),
+	   (is_stable_up(coordinate(I,J),Id,CurrentVal);is_stable_down(coordinate(I,J),Id,CurrentVal))));
+	%if diagonals in one direction are full with own pieces from the corner on + diagonal of own pieces to at least one edge --> piece is stable
+	((J > 1,!,NewJ is J-1,own_diagonals_south_west(coordinate(I,NewJ),Id),slot(coordinate(I,J),Id,CurrentVal),
+	    (is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal))));
+	((I < N,!,NewI is I+1,own_diagonals_south_west(coordinate(NewI,J),Id),slot(coordinate(I,J),Id,CurrentVal),
+	    (is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal))));
+	((J > 1,!,NewJ is J-1,own_diagonals_north_east(coordinate(I,NewJ),Id),slot(coordinate(I,J),Id,CurrentVal),
+	    (is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal))));
+	((I < N,!,NewI is I+1,own_diagonals_north_east(coordinate(NewI,J),Id),slot(coordinate(I,J),Id,CurrentVal),
+	    (is_stable_north_west(coordinate(I,J),Id,CurrentVal);is_stable_south_east(coordinate(I,J),Id,CurrentVal))));
+	((J > 1,!,NewJ is J-1,own_diagonals_north_west(coordinate(I,NewJ),Id),slot(coordinate(I,J),Id,CurrentVal),
+	    (is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal))));
+	((I > 1,!,NewI is I-1,own_diagonals_north_west(coordinate(NewI,J),Id),slot(coordinate(I,J),Id,CurrentVal),
+	    (is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal))));
+	((J < N,!,NewJ is J+1,own_diagonals_south_east(coordinate(I,NewJ),Id),slot(coordinate(I,J),Id,CurrentVal),
+	    (is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal))));
+	((I < N,!,NewI is I+1,own_diagonals_south_east(coordinate(NewI,J),Id),slot(coordinate(I,J),Id,CurrentVal),
+	    (is_stable_north_east(coordinate(I,J),Id,CurrentVal);is_stable_south_west(coordinate(I,J),Id,CurrentVal))))
 	).
 
 
 is_stable_left(coordinate(I,J),Id,CurrentVal):-
 	CurrentVal =:= 1,
-	dimension(N),
-	((I =:= 1, J =:= 1);
-	(I =:= N, J =:= 1);
-	(I =:= 1, J > 1, NewJ is J-1, slot(Id,corrdinate(I,NewJ,NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal)));
-	(I =:= N, J > 1, NewJ is J-1, slot(Id,corrdinate(I,NewJ,NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal)))).
+	(J =:= 1;
+        (J > 1, NewJ is J-1, slot(Id,corrdinate(I,NewJ),NewCurrentVal),is_stable_left(coordinate(I,NewJ),Id,NewCurrentVal))).
 
 is_stable_right(coordinate(I,J),Id,CurrentVal):-
 	CurrentVal =:= 1,
 	dimension(N),
-	((I =:= 1, J =:= N);
-	(I =:= N, J =:= N);
-	(I =:= 1, J < N, NewJ is J+1, slot(Id,corrdinate(I,NewJ,NewCurrentVal),is_stable_right(coordinate(I,NewJ),Id,NewCurrentVal)));
-	(I =:= N, J < N, NewJ is J+1, slot(Id,corrdinate(I,NewJ,NewCurrentVal),is_stable_right(coordinate(I,NewJ),Id,NewCurrentVal)))).
+	(J =:= N;
+	(J < N, NewJ is J+1, slot(Id,corrdinate(I,NewJ),NewCurrentVal),is_stable_right(coordinate(I,NewJ),Id,NewCurrentVal))).
 
 is_stable_up(coordinate(I,J),Id,CurrentVal):-
 	CurrentVal =:= 1,
-	dimension(N),
-	((I =:= 1, J =:= N);
-	(I =:= N, J =:= N);
-	(I > 1, J < N, NewI is I-1, slot(Id,corrdinate(NewI,J,NewCurrentVal),is_stable_right(coordinate(NewI,J),Id,NewCurrentVal)));
-	(I > 1, J < N, NewI is I-1, slot(Id,corrdinate(NewI,J,NewCurrentVal),is_stable_right(coordinate(NewI,J),Id,NewCurrentVal)))).
+	(I =:= 1;
+	(I > 1, NewI is I-1, slot(Id,corrdinate(NewI,J),NewCurrentVal),is_stable_up(coordinate(NewI,J),Id,NewCurrentVal))).
 
 is_stable_down(coordinate(I,J),Id,CurrentVal):-
 	CurrentVal =:= 1,
 	dimension(N),
-	((I =:= 1, J =:= N);
-	(I =:= N, J =:= N);
-	(I < N, J < N, NewI is I+1, slot(Id,corrdinate(NewI,J,NewCurrentVal),is_stable_right(coordinate(NewI,J),Id,NewCurrentVal)));
-	(I < N, J < N, NewI is I+1, slot(Id,corrdinate(NewI,J,NewCurrentVal),is_stable_right(coordinate(NewI,J),Id,NewCurrentVal)))).
+	(I =:= N;
+	(I < N, NewI is I+1, slot(Id,corrdinate(NewI,J),NewCurrentVal),is_stable_down(coordinate(NewI,J),Id,NewCurrentVal))).
+
+is_stable_north_west(coordinate(I,J),Id,CurrentVal):-
+	CurrentVal =:= 1,
+	(I =:= 1;
+	 J =:= 1;
+	(NewI is I-1, NewJ is J-1, slot(Id,coordinate(NewI,NewJ),NewCurrentVal),is_stable_north_west(coordinate(NewI,NewJ),Id,NewCurrentVal))).
+
+is_stable_south_east(coordinate(I,J),Id,CurrentVal):-
+	CurrentVal =:= 1,
+	dimension(N),
+	(I =:= N;
+	 J =:= N;
+	(I < N, J < N,!, NewI is I+1, NewJ is J+1,
+	 slot(Id,coordinate(NewI,NewJ),NewCurrentVal),is_stable_south_east(coordinate(NewI,NewJ),Id,NewCurrentVal))).
+
+is_stable_north_east(coordinate(I,J),Id,CurrentVal):-
+	CurrentVal =:= 1,
+	dimension(N),
+	(I =:= 1;
+	 J =:= N;
+	(NewI is I-1, NewJ is J+1, slot(Id,coordinate(NewI,NewJ),NewCurrentVal),is_stable_north_east(coordinate(NewI,NewJ),Id,NewCurrentVal))).
+
+is_stable_south_west(coordinate(I,J),Id,CurrentVal):-
+	CurrentVal =:= 1,
+	dimension(N),
+	(I =:= N;
+	 J =:= 1;
+	(NewI is I+1, NewJ is J-1, slot(Id,coordinate(NewI,NewJ),NewCurrentVal),is_stable_south_west(coordinate(NewI,NewJ),Id,NewCurrentVal))).
 
 full_row(coordinate(I,J),Id):-
 	dimension(N),
-	slot(Id,coordinate(I,J,CurrentVal),(CurrentVal =:= 1; CurrentVal =:= 2)),
+	slot(Id,coordinate(I,J),CurrentVal),(CurrentVal =:= 1; CurrentVal =:= 2),
 	(J < N,!,NewJ is J+1,full_row(coordinate(I,NewJ),Id)).
 
 full_column(coordinate(I,J),Id):-
 	dimension(N),
 	slot(Id,coordinate(I,J),CurrentVal),(CurrentVal =:= 1; CurrentVal =:= 2),
-	(I < N,!,NewI is I+1,full_row(coordinate(NewI,J),Id)).
+	(I < N,!,NewI is I+1,full_column(coordinate(NewI,J),Id)).
 
 own_rows_up(coordinate(I,J),Id):-
 	dimension(N),
 	slot(Id,coordinate(I,J),CurrentVal),
 	CurrentVal =:= 1,
-	(J < N, NewJ is J+1, own_rows_up(I, NewJ);
-	 I > 1, NewI is I-1, own_rows_up(NewI,1)).
+	 ((I =:= 1, J=:= N);
+	 (J < N, NewJ is J+1, own_rows_up(I, NewJ));
+	 (I > 1, NewI is I-1, own_rows_up(NewI,1))).
 
 own_rows_down(coordinate(I,J),Id):-
 	dimension(N),
 	slot(Id,coordinate(I,J),CurrentVal),
 	CurrentVal =:= 1,
-	(J < N, NewJ is J+1, own_rows_down(I, NewJ);
-	 I < N, NewI is I+1, own_rows_down(NewI,1)).
+	 ((I =:= N, J =:= N);
+	 (J < N, NewJ is J+1, own_rows_down(I, NewJ));
+	 (I < N, NewI is I+1, own_rows_down(NewI,1))).
 
 own_columns_left(coordinate(I,J),Id):-
 	dimension(N),
 	slot(Id,coordinate(I,J),CurrentVal),
 	CurrentVal =:= 1,
-	(I < N, NewI is I+1, own_columns_left(NewI, J);
-	 J > 1, NewJ is J-1, own_rows_up(1,NewJ)).
+	 ((I =:= N, J =:= 1);
+	 (I < N, NewI is I+1, own_columns_left(NewI, J));
+	 (J > 1, NewJ is J-1, own_columns_left(1,NewJ))).
 
 own_columns_right(coordinate(I,J),Id):-
 	dimension(N),
 	slot(Id,coordinate(I,J),CurrentVal),
 	CurrentVal =:= 1,
-	(I < N, NewI is I+1, own_columns_left(NewI, J);
-	 J < N, NewJ is J+1, own_rows_up(1,NewJ)).
+	((I =:= N, J =:= N);
+	 (I < N, NewI is I+1, own_columns_right(NewI, J));
+	 (J < N, NewJ is J+1, own_columns_right(1,NewJ))).
 
+own_diagonals_south_west(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal),
+	CurrentVal =:= 1,
+	is_stable_north_west(coordinate(I,J),Id,CurrentVal),is_stable_south_east(coordinate(I,J),Id,CurrentVal),
+	((I =:= N, J =:= 1);
+	(J > 1, NewJ is J-1,own_diagonals_south_west(coordinate(I,NewJ),Id));
+	(I < N, NewI is I+1,own_diagonals_south_west(coordinate(NewI,J),Id))).
+
+own_diagonals_north_east(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal),
+	CurrentVal =:= 1,
+	is_stable_north_west(coordinate(I,J),Id,CurrentVal),is_stable_south_east(coordinate(I,J),Id,CurrentVal),
+	((I =:= 1, J =:= N);
+	(J < N, NewJ is J+1,own_diagonals_north_east(coordinate(I,NewJ),Id));
+	(I > 1, NewI is I-1,own_diagonals_north_east(coordinate(NewI,J),Id))).
+
+own_diagonals_south_east(coordinate(I,J),Id):-
+	dimension(N),
+	slot(Id,coordinate(I,J),CurrentVal),
+	CurrentVal =:= 1,
+	is_stable_north_east(coordinate(I,J),Id,CurrentVal),is_stable_south_west(coordinate(I,J),Id,CurrentVal),
+	((I =:= N, J =:= N);
+	(J < N, NewJ is J+1,own_diagonals_south_east(coordinate(I,NewJ),Id));
+	(I < N, NewI is I+1,own_diagonals_south_east(coordinate(NewI,J),Id))).
+
+own_diagonals_north_west(coordinate(I,J),Id):-
+	slot(Id,coordinate(I,J),CurrentVal),
+	CurrentVal =:= 1,
+	is_stable_north_east(coordinate(I,J),Id,CurrentVal),is_stable_south_west(coordinate(I,J),Id,CurrentVal),
+	((I =:= 1, J =:= 1);
+	(J > 1, NewJ is J-1,own_diagonals_north_west(coordinate(I,NewJ),Id));
+	(I > 1, NewI is I-1,own_diagonals_north_west(coordinate(NewI,J),Id))).
 
 /* Heurstic evaluation function #2
    mobility_evaluation(+Grid,-Val)
@@ -721,7 +803,7 @@ get_max_depth(Level,MaxDepth):-
 	;
 	(Level =:= 3,!, MaxDepth = 5)	% advanced
 	;
-	(Level =:= 4,!, MaxDepth = 5)).	% advanced
+	(Level =:= 4,!, MaxDepth = 3)).	% advanced
 
 /* user_exit(+X) - check if user requested to quit. if so, turn on appropriate flag */
 user_exit(X):-
