@@ -1,0 +1,408 @@
+{
+    "grid_dimension": 8,
+    "iterations": 100,
+    "level_1": 0,
+    "level_2": 1,
+    "result": [
+        {
+            "player1:": "45",
+            "player2:": "19"
+        },
+        {
+            "player1:": "58",
+            "player2:": "6"
+        },
+        {
+            "player1:": "26",
+            "player2:": "38"
+        },
+        {
+            "player1:": "17",
+            "player2:": "47"
+        },
+        {
+            "player1:": "24",
+            "player2:": "40"
+        },
+        {
+            "player1:": "42",
+            "player2:": "22"
+        },
+        {
+            "player1:": "19",
+            "player2:": "45"
+        },
+        {
+            "player1:": "18",
+            "player2:": "46"
+        },
+        {
+            "player1:": "47",
+            "player2:": "16"
+        },
+        {
+            "player1:": "57",
+            "player2:": "7"
+        },
+        {
+            "player1:": "48",
+            "player2:": "16"
+        },
+        {
+            "player1:": "44",
+            "player2:": "20"
+        },
+        {
+            "player1:": "39",
+            "player2:": "25"
+        },
+        {
+            "player1:": "41",
+            "player2:": "22"
+        },
+        {
+            "player1:": "49",
+            "player2:": "15"
+        },
+        {
+            "player1:": "15",
+            "player2:": "49"
+        },
+        {
+            "player1:": "0",
+            "player2:": "36"
+        },
+        {
+            "player1:": "25",
+            "player2:": "39"
+        },
+        {
+            "player1:": "22",
+            "player2:": "42"
+        },
+        {
+            "player1:": "21",
+            "player2:": "43"
+        },
+        {
+            "player1:": "28",
+            "player2:": "36"
+        },
+        {
+            "player1:": "19",
+            "player2:": "45"
+        },
+        {
+            "player1:": "26",
+            "player2:": "38"
+        },
+        {
+            "player1:": "24",
+            "player2:": "40"
+        },
+        {
+            "player1:": "16",
+            "player2:": "48"
+        },
+        {
+            "player1:": "58",
+            "player2:": "6"
+        },
+        {
+            "player1:": "21",
+            "player2:": "43"
+        },
+        {
+            "player1:": "50",
+            "player2:": "0"
+        },
+        {
+            "player1:": "21",
+            "player2:": "43"
+        },
+        {
+            "player1:": "33",
+            "player2:": "31"
+        },
+        {
+            "player1:": "19",
+            "player2:": "45"
+        },
+        {
+            "player1:": "24",
+            "player2:": "40"
+        },
+        {
+            "player1:": "34",
+            "player2:": "30"
+        },
+        {
+            "player1:": "29",
+            "player2:": "35"
+        },
+        {
+            "player1:": "37",
+            "player2:": "27"
+        },
+        {
+            "player1:": "31",
+            "player2:": "33"
+        },
+        {
+            "player1:": "0",
+            "player2:": "45"
+        },
+        {
+            "player1:": "25",
+            "player2:": "39"
+        },
+        {
+            "player1:": "12",
+            "player2:": "52"
+        },
+        {
+            "player1:": "47",
+            "player2:": "17"
+        },
+        {
+            "player1:": "33",
+            "player2:": "31"
+        },
+        {
+            "player1:": "16",
+            "player2:": "48"
+        },
+        {
+            "player1:": "53",
+            "player2:": "11"
+        },
+        {
+            "player1:": "18",
+            "player2:": "46"
+        },
+        {
+            "player1:": "43",
+            "player2:": "21"
+        },
+        {
+            "player1:": "44",
+            "player2:": "20"
+        },
+        {
+            "player1:": "17",
+            "player2:": "47"
+        },
+        {
+            "player1:": "35",
+            "player2:": "29"
+        },
+        {
+            "player1:": "37",
+            "player2:": "27"
+        },
+        {
+            "player1:": "39",
+            "player2:": "25"
+        },
+        {
+            "player1:": "1",
+            "player2:": "60"
+        },
+        {
+            "player1:": "14",
+            "player2:": "50"
+        },
+        {
+            "player1:": "38",
+            "player2:": "26"
+        },
+        {
+            "player1:": "17",
+            "player2:": "47"
+        },
+        {
+            "player1:": "43",
+            "player2:": "21"
+        },
+        {
+            "player1:": "44",
+            "player2:": "20"
+        },
+        {
+            "player1:": "44",
+            "player2:": "20"
+        },
+        {
+            "player1:": "24",
+            "player2:": "40"
+        },
+        {
+            "player1:": "40",
+            "player2:": "24"
+        },
+        {
+            "player1:": "35",
+            "player2:": "29"
+        },
+        {
+            "player1:": "2",
+            "player2:": "39"
+        },
+        {
+            "player1:": "39",
+            "player2:": "25"
+        },
+        {
+            "player1:": "49",
+            "player2:": "15"
+        },
+        {
+            "player1:": "16",
+            "player2:": "48"
+        },
+        {
+            "player1:": "16",
+            "player2:": "48"
+        },
+        {
+            "player1:": "30",
+            "player2:": "34"
+        },
+        {
+            "player1:": "37",
+            "player2:": "27"
+        },
+        {
+            "player1:": "42",
+            "player2:": "22"
+        },
+        {
+            "player1:": "41",
+            "player2:": "23"
+        },
+        {
+            "player1:": "26",
+            "player2:": "38"
+        },
+        {
+            "player1:": "2",
+            "player2:": "60"
+        },
+        {
+            "player1:": "45",
+            "player2:": "19"
+        },
+        {
+            "player1:": "46",
+            "player2:": "18"
+        },
+        {
+            "player1:": "38",
+            "player2:": "26"
+        },
+        {
+            "player1:": "8",
+            "player2:": "56"
+        },
+        {
+            "player1:": "20",
+            "player2:": "44"
+        },
+        {
+            "player1:": "13",
+            "player2:": "51"
+        },
+        {
+            "player1:": "44",
+            "player2:": "20"
+        },
+        {
+            "player1:": "30",
+            "player2:": "34"
+        },
+        {
+            "player1:": "22",
+            "player2:": "42"
+        },
+        {
+            "player1:": "44",
+            "player2:": "20"
+        },
+        {
+            "player1:": "18",
+            "player2:": "46"
+        },
+        {
+            "player1:": "41",
+            "player2:": "22"
+        },
+        {
+            "player1:": "30",
+            "player2:": "34"
+        },
+        {
+            "player1:": "31",
+            "player2:": "33"
+        },
+        {
+            "player1:": "22",
+            "player2:": "42"
+        },
+        {
+            "player1:": "42",
+            "player2:": "22"
+        },
+        {
+            "player1:": "44",
+            "player2:": "20"
+        },
+        {
+            "player1:": "25",
+            "player2:": "39"
+        },
+        {
+            "player1:": "23",
+            "player2:": "41"
+        },
+        {
+            "player1:": "43",
+            "player2:": "21"
+        },
+        {
+            "player1:": "38",
+            "player2:": "26"
+        },
+        {
+            "player1:": "44",
+            "player2:": "20"
+        },
+        {
+            "player1:": "25",
+            "player2:": "39"
+        },
+        {
+            "player1:": "24",
+            "player2:": "40"
+        },
+        {
+            "player1:": "3",
+            "player2:": "61"
+        },
+        {
+            "player1:": "27",
+            "player2:": "37"
+        },
+        {
+            "player1:": "0",
+            "player2:": "30"
+        },
+        {
+            "player1:": "35",
+            "player2:": "29"
+        },
+        {
+            "player1:": "13",
+            "player2:": "51"
+        }
+    ]
+}

@@ -1,6 +1,7 @@
 
 import json
 from multiprocessing import Process
+import time
 
 
 def run_prolog():
@@ -41,13 +42,17 @@ if __name__ == '__main__':
     file.write(data)
     file.close()
 
+    nbrVictoire = 0
+
     # https://groups.google.com/g/swi-prolog/c/3xctENNrHD8
 
     for i in range(ITERATION):
+        start_time = time.time()
         process = Process(target=run_prolog, args=[])
         process.start()
         process.join()
         print(process.is_alive())
+        end_time = time.time()
         # from here output has been written into output.txt
         # open file output to get result
         f = open("output.txt", "r")
@@ -69,13 +74,21 @@ if __name__ == '__main__':
             result = {}
         if i == 0:
             result["result"] = []
-            result["result"].append({"player1:":result1,"player2:":result2})
+            result["result"].append({"player1:":result1,"player2:":result2, "temps:": end_time-start_time,})
             result["iterations"] = ITERATION
             result["grid_dimension"] = GRID_DIM
             result["level_1"] = LEVEL1
             result["level_2"] = LEVEL2
         else:
-            result["result"].append({"player1:": result1, "player2:": result2})
+            result["result"].append({"player1:": result1, "player2:": result2, "temps:": end_time-start_time,})
 
+        if(result2>result1):
+            nbrVictoire += 1
+    
         with open('results.json', 'w') as outfile:
             json.dump(result, outfile, sort_keys=True, indent=4)
+    result["pourcentage"] = nbrVictoire/ITERATION
+    with open('results.json', 'w') as outfile:
+        json.dump(result, outfile, sort_keys=True, indent=4)
+    print("\n"+str(nbrVictoire/ITERATION))
+
