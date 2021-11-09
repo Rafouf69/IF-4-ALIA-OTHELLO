@@ -3,6 +3,7 @@
     "iterations": 100,
     "level_1": 0,
     "level_2": 4,
+    "combinaison": "(0.05 * CountVal) + (0.25 * MobilityVal) + (0.35 * CornersVal) + (0.15 * XVal) + (0.1 * CVal) + (0.1 * StableVal)",
     "result": [
         {
             "player1:": "10",
