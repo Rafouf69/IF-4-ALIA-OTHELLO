@@ -3,3 +3,4 @@ venv/
 test.pl
 results.json
 output.txt
+testvenv/

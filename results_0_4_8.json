@@ -1,0 +1,140 @@
+{
+    "grid_dimension": 8,
+    "iterations": 20,
+    "level_1": 0,
+    "level_2": 4,
+    "result": [
+        {
+            "player1:": "16",
+            "player2:": "48"
+        },
+        {
+            "player1:": "21",
+            "player2:": "43"
+        },
+        {
+            "player1:": "13",
+            "player2:": "51"
+        },
+        {
+            "player1:": "16",
+            "player2:": "48"
+        },
+        {
+            "player1:": "16",
+            "player2:": "48"
+        },
+        {
+            "player1:": "18",
+            "player2:": "46"
+        },
+        {
+            "player1:": "17",
+            "player2:": "47"
+        },
+        {
+            "player1:": "6",
+            "player2:": "58"
+        },
+        {
+            "player1:": "17",
+            "player2:": "47"
+        },
+        {
+            "player1:": "0",
+            "player2:": "62"
+        },
+        {
+            "player1:": "22",
+            "player2:": "42"
+        },
+        {
+            "player1:": "14",
+            "player2:": "50"
+        },
+        {
+            "player1:": "16",
+            "player2:": "48"
+        },
+        {
+            "player1:": "25",
+            "player2:": "39"
+        },
+        {
+            "player1:": "20",
+            "player2:": "44"
+        },
+        {
+            "player1:": "16",
+            "player2:": "48"
+        },
+        {
+            "player1:": "6",
+            "player2:": "58"
+        },
+        {
+            "player1:": "37",
+            "player2:": "27"
+        },
+        {
+            "player1:": "13",
+            "player2:": "51"
+        },
+        {
+            "player1:": "2",
+            "player2:": "61"
+        },
+        {
+            "player1:": "9",
+            "player2:": "55"
+        },
+        {
+            "player1:": "17",
+            "player2:": "47"
+        },
+        {
+            "player1:": "27",
+            "player2:": "37"
+        },
+        {
+            "player1:": "17",
+            "player2:": "47"
+        },
+        {
+            "player1:": "17",
+            "player2:": "47"
+        },
+        {
+            "player1:": "22",
+            "player2:": "42"
+        },
+        {
+            "player1:": "25",
+            "player2:": "39"
+        },
+        {
+            "player1:": "31",
+            "player2:": "33"
+        },
+        {
+            "player1:": "20",
+            "player2:": "44"
+        },
+        {
+            "player1:": "19",
+            "player2:": "45"
+        },
+        {
+            "player1:": "13",
+            "player2:": "51"
+        },
+        {
+            "player1:": "21",
+            "player2:": "43"
+        },
+        {
+            "player1:": "23",
+            "player2:": "41"
+        }
+    ]
+}
