@@ -1,0 +1,60 @@
+{
+    "combinaison": "(0.25 * MobilityVal) + (0.3 * CornersVal) + (0.15 * XVal) + (0.1 * CVal) + (0.2 * StableVal)",
+    "grid_dimension": 8,
+    "iterations": 10,
+    "level_1": 0,
+    "level_2": 4,
+    "pourcentage": 1.0,
+    "result": [
+        {
+            "player1:": "18",
+            "player2:": "46",
+            "temps:": 121.47763872146606
+        },
+        {
+            "player1:": "20",
+            "player2:": "44",
+            "temps:": 119.45465064048767
+        },
+        {
+            "player1:": "24",
+            "player2:": "40",
+            "temps:": 140.06907272338867
+        },
+        {
+            "player1:": "24",
+            "player2:": "40",
+            "temps:": 74.53900074958801
+        },
+        {
+            "player1:": "24",
+            "player2:": "40",
+            "temps:": 174.7948658466339
+        },
+        {
+            "player1:": "16",
+            "player2:": "48",
+            "temps:": 100.09036302566528
+        },
+        {
+            "player1:": "15",
+            "player2:": "49",
+            "temps:": 128.85160422325134
+        },
+        {
+            "player1:": "13",
+            "player2:": "51",
+            "temps:": 127.74899983406067
+        },
+        {
+            "player1:": "15",
+            "player2:": "49",
+            "temps:": 86.32862377166748
+        },
+        {
+            "player1:": "21",
+            "player2:": "43",
+            "temps:": 136.63453197479248
+        }
+    ]
+}
