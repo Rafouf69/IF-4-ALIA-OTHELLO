@@ -62,7 +62,9 @@ if __name__ == '__main__':
             result2 = x.split("-")[1]
         print(result1)
         print(result2)
-
+        if(result2>result1):
+            nbrVictoire += 1
+            print(nbrVictoire)
 
         try:
             f = open('results.json', )
@@ -82,13 +84,10 @@ if __name__ == '__main__':
         else:
             result["result"].append({"player1:": result1, "player2:": result2, "temps:": end_time-start_time,})
 
-        if(result2>result1):
-            nbrVictoire += 1
-    
         with open('results.json', 'w') as outfile:
             json.dump(result, outfile, sort_keys=True, indent=4)
     result["pourcentage"] = nbrVictoire/ITERATION
     with open('results.json', 'w') as outfile:
         json.dump(result, outfile, sort_keys=True, indent=4)
-    print("\n"+str(nbrVictoire/ITERATION))
+    print("\n"+str(nbrVictoire/ITERATION)+" "+str(nbrVictoire)+" "+str(ITERATION))
 
